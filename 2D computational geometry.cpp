@@ -21,12 +21,12 @@ int sgn(double x)
     if(fabs(x)<eps) return 0;
     else return x<0?-1:1;
 }
-int Dcmp(double x,double y)//±È½ÏÁ½¸ö¸¡µãÊı
+int Dcmp(double x,double y)//æ¯”è¾ƒä¸¤ä¸ªæµ®ç‚¹æ•°
 {
     if(fabs(x-y)<eps) return 0;
     else return x<y?-1:1;
 }
-//Æ½Ãæ¼¸ºÎ  µãºÍÏß
+//å¹³é¢å‡ ä½•  ç‚¹å’Œçº¿
 struct Point
 {
     double x,y;
@@ -43,12 +43,12 @@ struct Point
 };
 typedef Point Vector;
 typedef vector<Point> Polygon;
-double Dot(Vector A,Vector B){return A.x*B.x+A.y*B.y;}//µã»ı
+double Dot(Vector A,Vector B){return A.x*B.x+A.y*B.y;}//ç‚¹ç§¯
 double Len(Vector A){return sqrt(Dot(A,A));}
-double Angle(Vector A,Vector B){return acos(Dot(A,B)/Len(A)/Len(B));} //AÓëBµÄ¼Ğ½Ç
-double Cross(Vector A,Vector B) {return A.x*B.y-A.y*B.x;}//²æ»ı
-double Area2(Point A,Point B,Point C){return Cross(B-A,C-A);}//Èı½ÇĞÎABCÃæ»ıµÄÁ½±¶
-double Distance(Point A,Point B){return hypot(A.x-B.x,A.y-B.y);}//hypotÊÇÇóĞ±±ßµÄ ×Ô´øº¯Êı
+double Angle(Vector A,Vector B){return acos(Dot(A,B)/Len(A)/Len(B));} //Aä¸Bçš„å¤¹è§’
+double Cross(Vector A,Vector B) {return A.x*B.y-A.y*B.x;}//å‰ç§¯
+double Area2(Point A,Point B,Point C){return Cross(B-A,C-A);}//ä¸‰è§’å½¢ABCé¢ç§¯çš„ä¸¤å€
+double Distance(Point A,Point B){return hypot(A.x-B.x,A.y-B.y);}//hypotæ˜¯æ±‚æ–œè¾¹çš„ è‡ªå¸¦å‡½æ•°
 double Norm(Vector a){return a.x*a.x+a.y*a.y;}
 double Abs(Vector a){return sqrt(Norm(a));}
 bool isOrthogonal(Vector a,Vector b){return sgn(Dot(a,b))==0;}
@@ -57,11 +57,11 @@ bool isOrthogonal(Segment s1,Segment s2){return sgn(Dot(s1.p2-s1.p1,s2.p2-s2.p1)
 bool isParallel(Vector A,Vector B){return sgn(Cross(A,B))==0;}
 bool isParallel(Point a1,Point a2,Point b1,Point b2){return isParallel(a1-a2,b1-b2);}
 bool isParallel(Segment s1,Segment s2){return sgn(Cross(s1.p2-s1.p1,s2.p2-s2.p1))==0; }
-Vector Normal(Vector A){   double L = Abs(A);  return Vector(-A.y / L, A.x / L);}//µ¥Î»·¨ÏòÁ¿
+Vector Normal(Vector A){   double L = Abs(A);  return Vector(-A.y / L, A.x / L);}//å•ä½æ³•å‘é‡
 Vector Rotate(Vector A,double rad)
 {
     return Vector(A.x*cos(rad)-A.y*sin(rad),A.x*sin(rad)+A.y*cos(rad));
-} //ÏòÁ¿AÄæÊ±ÕëĞı×ªrad¶È
+} //å‘é‡Aé€†æ—¶é’ˆæ—‹è½¬radåº¦
 struct Line
 {
     Point p1,p2;
@@ -100,7 +100,7 @@ double Line_angle(Line v)
     if(sgn(k)<0) k+=pi;
     if(sgn(k-pi)==0) k-=pi;
     return k;
-}//·µ»ØÖ±ÏßÇãĞ±½Ç
+}//è¿”å›ç›´çº¿å€¾æ–œè§’
 
 
 int Point_line_relation(Point p,Line v)
@@ -109,14 +109,11 @@ int Point_line_relation(Point p,Line v)
     if(c<0) return 1;
     if(c>0) return 2;
     return 0;
-}//µãºÍÖ±ÏßµÄ¹ØÏµ£º1ÔÚ×ó²à 2ÔÚÓÒ²à 0ÔÚÖ±ÏßÉÏ
+}//ç‚¹å’Œç›´çº¿çš„å…³ç³»ï¼š1åœ¨å·¦ä¾§ 2åœ¨å³ä¾§ 0åœ¨ç›´çº¿ä¸Š
 
-
-bool Point_on_seg(Point p,Line V)
-{
-    return sgn(Dot(p-V.p1,p-V.p2))<=0;
-}//µãºÍÏß¶ÎµÄ¹ØÏµ 
-
+bool Point_on_seg(Point p, Line v) { // 0ä¸ºç‚¹ä¸åœ¨çº¿æ®µvä¸Šï¼›1ä¸ºç‚¹åœ¨çº¿æ®µvä¸Š
+    return sgn(Cross(p - v.p1, v.p2 - v.p1)) == 0 && sgn(Dot(p - v.p1, p - v.p2)) <= 0;
+}
 
 int Line_relation(Line v1,Line v2)
 {
@@ -126,32 +123,32 @@ int Line_relation(Line v1,Line v2)
         else return 0;
     }
     return 2;
-}//Á½Ö±ÏßµÄ¹ØÏµ 0ÎªÆ½ĞĞ 1ÎªÖØºÏ 2ÎªÏà½»
+}//ä¸¤ç›´çº¿çš„å…³ç³» 0ä¸ºå¹³è¡Œ 1ä¸ºé‡åˆ 2ä¸ºç›¸äº¤
 
 double Dis_point_line(Point p,Line v)
 {
     return fabs(Cross(p-v.p1,v.p2-v.p1))/Distance(v.p1,v.p2);
-}//µãµ½Ö±ÏßµÄ¾àÀë
+}//ç‚¹åˆ°ç›´çº¿çš„è·ç¦»
 
 Point project(Point p,Line s){
   Vector base=s.p2-s.p1;
   double r=Dot(p-s.p1,base)/Norm(base);
   return s.p1+base*r;
-}//µãÔÚÖ±ÏßÉÏµÄÍ¶Ó°
+}//ç‚¹åœ¨ç›´çº¿ä¸Šçš„æŠ•å½±
 
 Point symmetry(Point p,Line v)
 {
     Point q=project(p,v);
     return Point(2*q.x-p.x,2*q.y-p.y);
-} //µãp¶ÔÖ±ÏßvµÄ¶Ô³Æµã
+} //ç‚¹på¯¹ç›´çº¿vçš„å¯¹ç§°ç‚¹
 
 double Dis_point_seg(Point p,Segment v)
 {
     if(sgn(Dot(p-v.p1,v.p2-v.p1))<0||sgn(Dot(p-v.p2,v.p1-v.p2))<0)
     return min(Distance(p,v.p1),Distance(p,v.p2));
-    //µãµÄÍ¶Ó°²»ÔÚÏß¶ÎÉÏ
+    //ç‚¹çš„æŠ•å½±ä¸åœ¨çº¿æ®µä¸Š
     return Dis_point_line(p,v);
-    //µãµÄÍ¶Ó°ÔÚÏß¶ÎÉÏ
+    //ç‚¹çš„æŠ•å½±åœ¨çº¿æ®µä¸Š
 }
 Point getCrossPoint(Segment s1,Segment s2){
   Vector base=s2.p2-s2.p1;
@@ -182,7 +179,7 @@ int ccw(Point p0,Point p1,Point p2){
   return ON_SEGMENT;//0
 }
 bool intersect(Point p1,Point p2,Point p3,Point p4){
-    //ÇóÁ½Ïß¶ÎÊÇ·ñÏà½»
+    //æ±‚ä¸¤çº¿æ®µæ˜¯å¦ç›¸äº¤
   return (ccw(p1,p2,p3)*ccw(p1,p2,p4) <= 0 &&
       ccw(p3,p4,p1)*ccw(p3,p4,p2) <= 0 );
 }
@@ -203,7 +200,7 @@ double getDistanceSP(Segment s,Point p){
 }
 
 double getDistance(Segment s1,Segment s2){
-  if(intersect(s1,s2)) return 0.0;//Á½Ïß½»²æ¾àÀëÎª0
+  if(intersect(s1,s2)) return 0.0;//ä¸¤çº¿äº¤å‰è·ç¦»ä¸º0
   return min(min(getDistanceSP(s1,s2.p1),getDistanceSP(s1,s2.p2)),
          min(getDistanceSP(s2,s1.p1),getDistanceSP(s2,s1.p2)));
 }
@@ -212,7 +209,7 @@ double getDistance(Point p0,Point p1,Point p2,Point p3){
   return getDistance(Segment(p0,p1),Segment(p2,p3));
 }
 
-//Í¹°ü
+//å‡¸åŒ…
 istream &operator >> (istream &is,Point &p){
   is>>p.x>>p.y;
   return is;
@@ -225,7 +222,7 @@ ostream &operator << (ostream &os,Point p){
 
 
 double area(Polygon s){
-//ÇópolygonÃæ»ı ±ß¸øµÄ¶¼ÊÇÁ¬×ÅµÄ
+//æ±‚polygoné¢ç§¯ è¾¹ç»™çš„éƒ½æ˜¯è¿ç€çš„
   double res=0;
   for(int i=0;i<(int)s.size();i++){
     res+=Cross(s[i],s[(i+1)%s.size()])/2.0;
@@ -233,7 +230,7 @@ double area(Polygon s){
   return res;
 }
 
-//ÅĞ¶ÏµãÓë¶à±ßĞÎµÄÎ»ÖÃ
+//åˆ¤æ–­ç‚¹ä¸å¤šè¾¹å½¢çš„ä½ç½®
 int contains(Polygon g,Point p){
   int n=g.size();
   bool x=false;
@@ -246,7 +243,7 @@ int contains(Polygon g,Point p){
   return (x?2:0);
 }
 
-//ÅĞ¶ÏÍ¹°ü  ËùÓĞµãÊÇÄæÊ±ÕëË³Ğò¸ø³öµÄ
+//åˆ¤æ–­å‡¸åŒ…  æ‰€æœ‰ç‚¹æ˜¯é€†æ—¶é’ˆé¡ºåºç»™å‡ºçš„
 bool isConvex(Polygon p){
   bool f=1;
   int n=p.size();
@@ -261,7 +258,7 @@ Polygon andrewScan(Polygon s){
     Polygon u,l;
     if(s.size()<3)return s;
     sort(s.begin(),s.end());
-//ÕâÀï×¢ÒâÊÇ·ñĞèÒªÈ¥ÖØ
+//è¿™é‡Œæ³¨æ„æ˜¯å¦éœ€è¦å»é‡
     u.push_back(s[0]);
     u.push_back(s[1]);
     l.push_back(s[s.size()-1]);
@@ -287,8 +284,8 @@ Polygon andrewScan(Polygon s){
 }
 
 double diameter(Polygon s){
-//Í¹°üÖ±¾¶   ×¢ÒâÍ¹°ü¶¼ÊÇÄæÊ±ÕëµÄ È»ºóÖ±¾¶ÊÇ×î³¤Á½µãµÄ³¤¶È
-//Ò²¾ÍÊÇĞı×ª¿¨¿Ç
+//å‡¸åŒ…ç›´å¾„   æ³¨æ„å‡¸åŒ…éƒ½æ˜¯é€†æ—¶é’ˆçš„ ç„¶åç›´å¾„æ˜¯æœ€é•¿ä¸¤ç‚¹çš„é•¿åº¦
+//ä¹Ÿå°±æ˜¯æ—‹è½¬å¡å£³
   Polygon p=s;
   int n=p.size();
   if(n==2) return Abs(p[0]-p[1]);
@@ -314,7 +311,7 @@ double diameter(Polygon s){
 
 
 Polygon convexCut(Polygon p,Line l){
-//×ó°ë²¿·ÖÃæ»ı ¿ÉÒÔµ÷ÕûÖÁÓÒ°ë²¿·ÖÃæ»ı
+//å·¦åŠéƒ¨åˆ†é¢ç§¯ å¯ä»¥è°ƒæ•´è‡³å³åŠéƒ¨åˆ†é¢ç§¯
   Polygon q;
   for(int i=0;i<(int)p.size();i++){
     Point a=p[i],b=p[(i+1)%p.size()];
@@ -326,7 +323,7 @@ Polygon convexCut(Polygon p,Line l){
 }
 
 Point Polygon_center(Polygon p)
-//Çó¶à±ßĞÎÖØĞÄ
+//æ±‚å¤šè¾¹å½¢é‡å¿ƒ
 {
     int n=p.size();
     Point ans(0,0);
@@ -335,7 +332,7 @@ Point Polygon_center(Polygon p)
     ans=ans+(p[i]+p[(i+1)%n])*Cross(p[i],p[(i+1)%n]);
     return ans/area(p)/6;
 }
-//Ô²
+åœ†
 struct Circle{
   Point c;
   double r;
@@ -343,7 +340,7 @@ struct Circle{
   Circle(Point c,double r):c(c),r(r){}
 };
 
-//Á½Ô²Î»ÖÃ¹ØÏµ
+ä¸¤åœ†ä½ç½®å…³ç³»
 int intersectCC(Circle c1,Circle c2){
   if(c1.r<c2.r) swap(c1,c2);
   double d=Abs(c1.c-c2.c);
@@ -360,10 +357,10 @@ pair<Point,Point> getCrossPoints(Circle c,Line l){
   Vector e=(l.p2-l.p1)/Abs(l.p2-l.p1);
   double base=sqrt(c.r*c.r-Norm(pr-c.c));
   return make_pair(pr+e*base,pr-e*base);
-}//ÇóÔ²ºÍÏßµÄ½»µã
+}//æ±‚åœ†å’Œçº¿çš„äº¤ç‚¹
 
 double Arg(Vector p){return atan2(p.y,p.x);}
-//atan2º¯Êı·µ»ØµÄÊÇÔ­µãÖÁµã(x,y)µÄ·½Î»½Ç£¬¼´Óë x ÖáµÄ¼Ğ½Ç¡£Ò²¿ÉÒÔÀí½âÎª¸´Êı x+yi µÄ·ø½Ç [-pi,pi]
+//atan2å‡½æ•°è¿”å›çš„æ˜¯åŸç‚¹è‡³ç‚¹(x,y)çš„æ–¹ä½è§’ï¼Œå³ä¸ x è½´çš„å¤¹è§’ã€‚ä¹Ÿå¯ä»¥ç†è§£ä¸ºå¤æ•° x+yi çš„è¾è§’ [-pi,pi]
 Vector polar(double a,double r){ return Point(cos(r)*a,sin(r)*a);}
 
 pair<Point,Point> getCrossPoints(Circle c1,Circle c2){
@@ -371,14 +368,14 @@ pair<Point,Point> getCrossPoints(Circle c1,Circle c2){
   double a=acos((c1.r*c1.r+d*d-c2.r*c2.r)/(2*c1.r*d));
   double t=Arg(c2.c-c1.c);
   return make_pair(c1.c+polar(c1.r,t+a),c1.c+polar(c1.r,t-a));
-}//ÇóÔ²ºÍÔ²µÄ½»µã£¨pair°æ±¾£©
+}//æ±‚åœ†å’Œåœ†çš„äº¤ç‚¹ï¼ˆpairç‰ˆæœ¬ï¼‰
 
 Vector rot(Vector a,double theta){//rotate.
     double x1 = cos(theta) * a.x - sin(theta) * a.y;
     double y1 = sin(theta) * a.x + cos(theta) * a.y;
     return Point(x1,y1);
 }
-vector <Point> tangent(Circle o,Point p){//ÇóÔ²µÄÇĞÏß£¬È·±£ÇĞÏß´æÔÚ
+vector <Point> tangent(Circle o,Point p){//æ±‚åœ†çš„åˆ‡çº¿ï¼Œç¡®ä¿åˆ‡çº¿å­˜åœ¨
     Vector a = p - o.c;
     double theta = acos(o.r / a.abs());
     Vector b = a / a.abs() * o.r;
@@ -388,7 +385,7 @@ vector <Point> tangent(Circle o,Point p){//ÇóÔ²µÄÇĞÏß£¬È·±£ÇĞÏß´æÔÚ
     return res;
 }
 
-//ÇóÔÚÔ²o1ÉÏµÄ¹«ÇĞÏß
+//æ±‚åœ¨åœ†o1ä¸Šçš„å…¬åˆ‡çº¿
 vector <Point> commonTangents(Circle o1,Circle o2){
     double rdif = o1.r - o2.r,rsum = o1.r + o2.r;
     Vector a = o2.c - o1.c,b = a / a.abs() * o1.r;
@@ -415,7 +412,7 @@ vector <Point> commonTangents(Circle o1,Circle o2){
     return res;
 }
 
-//Ô²µÄÖĞ´¹Ïß ´¹µÄÊÇLine(p1,p2)
+//åœ†çš„ä¸­å‚çº¿ å‚çš„æ˜¯Line(p1,p2)
 Line bisector(Point p1,Point p2){
   Circle c1=Circle(p1,Abs(p1-p2)),c2=Circle(p2,Abs(p1-p2));
   pair<Point,Point> p=getCrossPoints(c1,c2);
@@ -423,15 +420,15 @@ Line bisector(Point p1,Point p2){
   return Line(p.first,p.second);
 }
 
-
-// ÉÈĞÎÃæ»ı£¬Ô²ĞÄÔÚc£¬ÉÈĞÎaµ½b
+/*
+// æ‰‡å½¢é¢ç§¯ï¼Œåœ†å¿ƒåœ¨cï¼Œæ‰‡å½¢aåˆ°b
 double fan_area(double r, Point a, Point b){
     double angle = acos(Dot(a, b) / Abs(a) / Abs(b));
     if(sgn(Cross(a, b)) < 0) angle = -angle;
     return r * r * angle / 2;
 }
 
-// ÇóÖ±ÏßºÍÔ²½»µã
+// æ±‚ç›´çº¿å’Œåœ†äº¤ç‚¹
 pair<Point, Point> intersection_of_line_and_circle (Circle c, Point l1, Point l2){
     Point p = project(c.c, Line(l1, l2));
     Point e = (l2 - l1) / Abs(l2 - l1);
@@ -439,7 +436,7 @@ pair<Point, Point> intersection_of_line_and_circle (Circle c, Point l1, Point l2
     return {p - e * base, p + e * base};
 }
 
-// ÇóÈı½ÇĞÎÓëÔ²Ïà½»Ãæ»ı£¬Ô²ĞÄ(0,0)£¬Èı½ÇĞÎÒ»¶¨µã¹ıÔ²ĞÄ
+// æ±‚ä¸‰è§’å½¢ä¸åœ†ç›¸äº¤é¢ç§¯ï¼Œåœ†å¿ƒ(0,0)ï¼Œä¸‰è§’å½¢ä¸€å®šç‚¹è¿‡åœ†å¿ƒ
 double intersection_area_of_triangle_and_circle (Point a, Point b, double r){
     Point p =project({0, 0},Line(a, b));
     double lena = Abs(a), lenb = Abs(b), lenp = Abs(p);
@@ -454,7 +451,7 @@ double intersection_area_of_triangle_and_circle (Point a, Point b, double r){
     return fan_area(r, a, pa) + Cross(pa, pb) / 2 + fan_area(r, pb, b);
 }
 
-// ¶à±ßĞÎÓëÔ²Ïà½»Ãæ»ı
+// å¤šè¾¹å½¢ä¸åœ†ç›¸äº¤é¢ç§¯
 double intersection_area_of_polygon_and_circle(Polygon p, Circle c){
     double res = 0;
     int n=p.size();
@@ -464,11 +461,10 @@ double intersection_area_of_polygon_and_circle(Polygon p, Circle c){
     }
     return res;
 }
+*/å‡¸å¤šè¾¹å½¢å’Œåœ†äº¤å¤§æ¿å—
 
-//Í¹¶à±ßĞÎºÍÔ²½»´ó°å¿é
 
-
-//Á½Ô²Ïà½»Ãæ»ı
+//ä¸¤åœ†ç›¸äº¤é¢ç§¯
 double intersection_area_of_two_circles(Circle c1, Circle c2){
     double d = Abs(c1.c - c2.c);
     if(c1.r + c2.r < d + eps) return 0;
@@ -483,7 +479,7 @@ double intersection_area_of_two_circles(Circle c1, Circle c2){
     return s2 - s1;
 }
 
-//Èı½ÇĞÎÄÚ½ÓÔ²
+//ä¸‰è§’å½¢å†…æ¥åœ†
 Circle inscribed_circle_of_triangle(Point p1, Point p2, Point p3){
     Point o; double r;
     double a = Abs(p1-p2), b = Abs(p2-p3), c = Abs(p1-p3);
@@ -494,8 +490,8 @@ Circle inscribed_circle_of_triangle(Point p1, Point p2, Point p3){
     return Circle(o, r);
 }
 
-// ÇóÈı½ÇĞÎÍâ½ÓÔ²
-Circle circumcircle_of_triangle(Point p1, Point p2, Point p3) {  //Èıµã¶¨Ô²
+// æ±‚ä¸‰è§’å½¢å¤–æ¥åœ†
+Circle circumcircle_of_triangle(Point p1, Point p2, Point p3) {  //ä¸‰ç‚¹å®šåœ†
     Point o; double r;
     double a, b, c, d, e, f;
     a = p1.x - p2.x, b = p1.y - p2.y, c = p1.x - p3.x, d = p1.y - p3.y;
@@ -507,8 +503,8 @@ Circle circumcircle_of_triangle(Point p1, Point p2, Point p3) {  //Èıµã¶¨Ô²
     return Circle(o, r);
 }
 
-//¼«½ÇÅÅĞò
-//´ÓµÚÈıÏóÏŞ¿ªÊ¼
+æè§’æ’åº
+//ä»ç¬¬ä¸‰è±¡é™å¼€å§‹
     vector<Vec> a(n);
     for(int i=0;i<n;i++)
         scanf("%lld%lld", &a[i].x, &a[i].y);
@@ -526,7 +522,7 @@ Circle circumcircle_of_triangle(Point p1, Point p2, Point p3) {  //Èıµã¶¨Ô²
     //  for(int i=0;i<n;i++)
     // printf("%lld %lld \n", a[i].x, a[i].y);
 
-//´ÓµÚÒ»ÏóÏŞ¿ªÊ¼
+//ä»ç¬¬ä¸€è±¡é™å¼€å§‹
 LL cross(Point a, Point b){
     return (LL)a.x * b.y - (LL)a.y * b.x;
 }
@@ -538,60 +534,62 @@ bool up(Point a){
             if (up(a) != up(b)) return up(a) > up(b);
             return cross(a, b) > 0;
         });
-//°ëÆ½Ãæ½»
+
+
+åŠå¹³é¢äº¤
 Vector Normal(Vector A){   double L = Abs(A);  return Vector(-A.y / L, A.x / L);}
 
-//ÓĞÏòÖ±Ïß¡£ËüµÄ×ó±ß¾ÍÊÇ¶ÔÓ¦µÄ°ëÆ½Ãæ
+//æœ‰å‘ç›´çº¿ã€‚å®ƒçš„å·¦è¾¹å°±æ˜¯å¯¹åº”çš„åŠå¹³é¢
 struct Line
 {
-    Point P;//Ö±ÏßÉÏÈÎÒâÒ»µã
-    Vector v;//·½ÏòÏòÁ¿¡£×ó±ß¾ÍÊÇ¶ÔÓ¦µÄ°ëÆ½Ãæ
-    double deg;//¼«½Ç
+    Point P;//ç›´çº¿ä¸Šä»»æ„ä¸€ç‚¹
+    Vector v;//æ–¹å‘å‘é‡ã€‚å·¦è¾¹å°±æ˜¯å¯¹åº”çš„åŠå¹³é¢
+    double deg;//æè§’
     Line(){}
     Line(Point P, Vector v):P(P), v(v){deg = atan2(v.y, v.x);}
-    bool operator < (const Line& L)const {//ÅÅĞòÊ±Ê¹ÓÃµÄ±È½ÏÔËËã·û
+    bool operator < (const Line& L)const {//æ’åºæ—¶ä½¿ç”¨çš„æ¯”è¾ƒè¿ç®—ç¬¦
         return deg < L.deg;
     }
 };
-//°ëÆ½Ãæ½»
-//°ëÆ½Ãæ½»Ò»°ãÊÇÒ»¸öÍ¹¶à±ßĞÎ£¬µ«ÊÇÓĞÊ±ºò»áÊÇÒ»¸öÎŞ½ç¶à±ßĞÎ
-//ÉõÖÁ»áÊÇÒ»¸öÖ±Ïß¡¢Ïß¶Î¡¢µã£¬µ«ÊÇ½á¹ûÒ»¶¨ÊÇÍ¹µÄ
+//åŠå¹³é¢äº¤
+//åŠå¹³é¢äº¤ä¸€èˆ¬æ˜¯ä¸€ä¸ªå‡¸å¤šè¾¹å½¢ï¼Œä½†æ˜¯æœ‰æ—¶å€™ä¼šæ˜¯ä¸€ä¸ªæ— ç•Œå¤šè¾¹å½¢
+//ç”šè‡³ä¼šæ˜¯ä¸€ä¸ªç›´çº¿ã€çº¿æ®µã€ç‚¹ï¼Œä½†æ˜¯ç»“æœä¸€å®šæ˜¯å‡¸çš„
 
-//µãpÔÚÓĞÏòÖ±ÏßLµÄ×ó±ß£¨ÏßÉÏµÄ²»Ëã£©£¨²æ»ı´óÓÚ0aÔÚbµÄ×ó²à£¬Ğ¡ÓÚ0ÔÚÓÒ²à[sin¼Ğ½Ç]£©
+//ç‚¹påœ¨æœ‰å‘ç›´çº¿Lçš„å·¦è¾¹ï¼ˆçº¿ä¸Šçš„ä¸ç®—ï¼‰ï¼ˆå‰ç§¯å¤§äº0aåœ¨bçš„å·¦ä¾§ï¼Œå°äº0åœ¨å³ä¾§[sinå¤¹è§’]ï¼‰
 bool on_left(Line L, Point P){return Cross(L.v, P - L.P) > 0;}
-//Á½¸öÓĞÏòÖ±ÏßµÄ½»µã/¼Ù¶¨½»µãÎ¨Ò»´æÔÚ
+//ä¸¤ä¸ªæœ‰å‘ç›´çº¿çš„äº¤ç‚¹/å‡å®šäº¤ç‚¹å”¯ä¸€å­˜åœ¨
 Point get_intersection(Line a, Line b)
 {
     Vector u = a.P - b.P;
     double t = Cross(b.v, u) / Cross(a.v, b.v);
     return a.P + a.v * t;
 }
-//°ëÆ½Ãæ½»µÄÖ÷¹ı³Ì
+//åŠå¹³é¢äº¤çš„ä¸»è¿‡ç¨‹
 int half_plane_intersection(Line* L, int n, Point* poly)
 {
-    sort(L, L + n);//°´ÕÕ¼«½ÇÅÅĞò
+    sort(L, L + n);//æŒ‰ç…§æè§’æ’åº
 
-    int first, last;//Ë«¶Ë¶ÓÁĞ
-    Point *p = new Point[n];//p[i]Îªq[i]ºÍq[i + 1]µÄ½»µã
-    Line *q = new Line[n];//ÊÖĞ´µÄLineÀàĞÍµÄË«¶Ë¶ÓÁĞ£¨Êı×é£©
-    q[first = last = 0] = L[0];//Ë«¶Ë¶ÓÁĞ³õÊ¼»¯µÄÊ±ºòÖ»ÓĞÒ»¸ö°ëÆ½ÃæL[0]
+    int first, last;//åŒç«¯é˜Ÿåˆ—
+    Point *p = new Point[n];//p[i]ä¸ºq[i]å’Œq[i + 1]çš„äº¤ç‚¹
+    Line *q = new Line[n];//æ‰‹å†™çš„Lineç±»å‹çš„åŒç«¯é˜Ÿåˆ—ï¼ˆæ•°ç»„ï¼‰
+    q[first = last = 0] = L[0];//åŒç«¯é˜Ÿåˆ—åˆå§‹åŒ–çš„æ—¶å€™åªæœ‰ä¸€ä¸ªåŠå¹³é¢L[0]
     for(int i = 1; i < n; ++ i){
         while(first < last && !on_left(L[i], p[last - 1]))last -- ;
         while(first < last && !on_left(L[i], p[first]))first ++ ;
-        q[++ last] = L[i];//ĞÂµÄµãÊÇÒ»¶¨Òª·Å½øÈ¥µÄ
+        q[++ last] = L[i];//æ–°çš„ç‚¹æ˜¯ä¸€å®šè¦æ”¾è¿›å»çš„
         if(fabs(Cross(q[last].v, q[last - 1].v)) < eps){
-        //ÏàÁÚµÄÁ½¸öÏòÁ¿Æ½ĞĞÇÒÍ¬Ïò£¬È¡ÄÚ²àµÄÄÇÒ»¸ö
-            last -- ;//Èç¹ûĞÂµÄÏòÁ¿ÉÏµÄÒ»¸öµãÔÚÀÏµÄÏòÁ¿µÄ×ó²à¾ÍÈ¡ĞÂµÄ
+        //ç›¸é‚»çš„ä¸¤ä¸ªå‘é‡å¹³è¡Œä¸”åŒå‘ï¼Œå–å†…ä¾§çš„é‚£ä¸€ä¸ª
+            last -- ;//å¦‚æœæ–°çš„å‘é‡ä¸Šçš„ä¸€ä¸ªç‚¹åœ¨è€çš„å‘é‡çš„å·¦ä¾§å°±å–æ–°çš„
             if(on_left(q[last], L[i].P))q[last] = L[i];
         }
         if(first < last)p[last - 1] = get_intersection(q[last - 1], q[last]);
     }
     while(first < last && !on_left(q[first], p[last - 1]))last -- ;
-    //É¾³ıÎŞÓÃµÄÆ½Ãæ
+    //åˆ é™¤æ— ç”¨çš„å¹³é¢
 
-    if(last - first <= 1)return 0;//¿Õ¼¯
-    p[last] = get_intersection(q[last], q[first]);//¼ÆËãÊ×Î²Á½¸ö°ëÆ½Ãæ½»£¨»·×´£©
-    //´ÓÊÖĞ´dequeÖĞ¸´ÖÆ´ğ°¸µ½Êä³öÊı×éÖĞ
+    if(last - first <= 1)return 0;//ç©ºé›†
+    p[last] = get_intersection(q[last], q[first]);//è®¡ç®—é¦–å°¾ä¸¤ä¸ªåŠå¹³é¢äº¤ï¼ˆç¯çŠ¶ï¼‰
+    //ä»æ‰‹å†™dequeä¸­å¤åˆ¶ç­”æ¡ˆåˆ°è¾“å‡ºæ•°ç»„ä¸­
     int m = 0;
     for(int i = first ; i <= last; ++ i)poly[m ++ ] = p[i];
     return m;
@@ -599,9 +597,9 @@ int half_plane_intersection(Line* L, int n, Point* poly)
 
 
 
-//ãÉ¿Æ·òË¹»ùºÍ
+é—µç§‘å¤«æ–¯åŸºå’Œ
 Vector V1[N],V2[N];
-int Mincowski(Polygon P1,Polygon P2,Vector *V){//¡¾ãÉ¿É·òË¹»ùºÍ¡¿ÇóÁ½¸öÍ¹°ü{P1},{P2}µÄÏòÁ¿¼¯ºÏ{V}={P1+P2}¹¹³ÉµÄÍ¹°ü
+int Mincowski(Polygon P1,Polygon P2,Vector *V){//ã€é—µå¯å¤«æ–¯åŸºå’Œã€‘æ±‚ä¸¤ä¸ªå‡¸åŒ…{P1},{P2}çš„å‘é‡é›†åˆ{V}={P1+P2}æ„æˆçš„å‡¸åŒ…
     int n=P1.size();
     int m=P2.size();
     for(int i=1;i<=n;++i)V1[i]=P1[i<n?i+1:1]-P1[i];
@@ -614,21 +612,119 @@ int Mincowski(Polygon P1,Polygon P2,Vector *V){//¡¾ãÉ¿É·òË¹»ùºÍ¡¿ÇóÁ½¸öÍ¹°ü{P1},
 }
 
 
-//¶à±ßĞÎÄÚÍø¸ñµã¸öÊı
+å¤šè¾¹å½¢å†…ç½‘æ ¼ç‚¹ä¸ªæ•°
 #define abs(x) ((x)>0?(x):-(x))
 struct point{int x,y;};
 int gcd(int a,int b){return b?gcd(b,a%b):a;}
-//¶à±ßĞÎÉÏµÄÍø¸ñµã¸öÊı
+//å¤šè¾¹å½¢ä¸Šçš„ç½‘æ ¼ç‚¹ä¸ªæ•°
 int grid_onedge(int n,point* p){
     int i,ret=0;
     for (i=0;i<n;i++)
         ret+=gcd(abs(p[i].x-p[(i+1)%n].x),abs(p[i].y-p[(i+1)%n].y));
     return ret;
 }
-//¶à±ßĞÎÄÚµÄÍø¸ñµã¸öÊı
+//å¤šè¾¹å½¢å†…çš„ç½‘æ ¼ç‚¹ä¸ªæ•°
 int grid_inside(int n,point* p){
     int i,ret=0;
     for (i=0;i<n;i++)
         ret+=p[(i+1)%n].y*(p[i].x-p[(i+2)%n].x);
     return (abs(ret)-grid_onedge(n,p))/2+1;
+}
+
+
+å¤šè¾¹å½¢å¹¶é¢ç§¯ æ¿å­
+#include<bits/stdc++.h>
+using namespace std;
+#define mp make_pair
+typedef long long ll;
+const double inf=1e200;
+const double eps=1e-12;
+const double pi=4*atan(1.0);
+int dcmp(double x){ return fabs(x)<eps?0:(x<0?-1:1);}
+struct point{
+    double x,y;
+    point(double a=0,double b=0):x(a),y(b){}
+};
+point operator +(point A,point B) { return point(A.x+B.x,A.y+B.y);}
+point operator -(point A,point B) { return point(A.x-B.x,A.y-B.y);}
+point operator *(point A,double p){ return point(A.x*p,A.y*p);}
+point operator /(point A,double p){ return point(A.x/p,A.y/p);}
+bool operator ==(const point& a,const point& b){
+    return fabs(a.x-b.x)<eps&&fabs(a.y-b.y)<eps;
+}
+double dot(point A,point B){ return A.x*B.x+A.y*B.y;}
+double det(point A,point B){ return A.x*B.y-A.y*B.x;}
+double det(point O,point A,point B){ return det(A-O,B-O);}
+double length(point A){ return sqrt(dot(A,A));}
+double area(vector<point>p){
+    double ans=0; int sz=p.size();
+    for(int i=1;i<sz-1;i++) ans+=det(p[i]-p[0],p[i+1]-p[0]);
+    return ans/2.0;
+}
+double seg(point O,point A,point B){
+    if(dcmp(B.x-A.x)==0) return (O.y-A.y)/(B.y-A.y);
+    return (O.x-A.x)/(B.x-A.x);
+}
+vector<point>pp[110];
+pair<double,int>s[110*60];
+double polyunion(vector<point>*p,int N){
+    double res=0;
+    for(int i=0;i<N;i++){
+        int sz=p[i].size();
+        for(int j=0;j<sz;j++){
+            int m=0;
+            s[m++]=mp(0,0);
+            s[m++]=mp(1,0);
+            point a=p[i][j],b=p[i][(j+1)%sz];
+            for(int k=0;k<N;k++){
+                if(i!=k){
+                    int sz2=p[k].size();
+                    for(int ii=0;ii<sz2;ii++){
+                        point c=p[k][ii],d=p[k][(ii+1)%sz2];
+                        int c1=dcmp(det(b-a,c-a));
+                        int c2=dcmp(det(b-a,d-a));
+                        if(c1==0&&c2==0){
+                            if(dcmp(dot(b-a,d-c))){
+                                s[m++]=mp(seg(c,a,b),1);
+                                s[m++]=mp(seg(c,a,b),-1);
+                            }
+                        }
+                        else{
+                            double s1=det(d-c,a-c);
+                            double s2=det(d-c,b-c);
+                            if(c1>=0&&c2<0) s[m++]=mp(s1/(s1-s2),1);
+                            else if(c1<0&&c2>=0) s[m++]=mp(s1/(s1-s2),-1);
+                        }
+                    }
+                }    
+            }
+            sort(s,s+m);
+            double pre=min(max(s[0].first,0.0),1.0),now,sum=0;
+            int cov=s[0].second;
+            for(int j=1;j<m;j++){
+                now=min(max(s[j].first,0.0),1.0);
+                if(!cov) sum+=now-pre;
+                cov+=s[j].second;
+                pre=now;
+            }
+            res+=det(a,b)*sum;
+        }
+    }
+    return res/2;
+}
+int main()
+{
+    int N,M,i,j; point tp;
+    scanf("%d",&N);
+    for(i=0;i<N;i++){
+        scanf("%d",&M);
+        for(j=0;j<M;j++){
+            scanf("%lf%lf",&tp.x,&tp.y);
+            pp[i].push_back(tp);
+        }
+    }
+    double t1=0,t2=polyunion(pp,N);
+    for(i=0;i<N;i++) t1+=area(pp[i]);
+    printf("%.7lf %.7lf\n",-t1,-t2);
+    return 0;
 }
